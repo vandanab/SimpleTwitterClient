@@ -5,8 +5,11 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +32,7 @@ public class ComposeActivity extends Activity {
 	private TextView tvName;
 	private EditText etStatus;
 	private TwitterClient client;
+	private TextView tvNumChars;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +40,23 @@ public class ComposeActivity extends Activity {
 		setContentView(R.layout.activity_compose);
 		populateView();
 		client = TwitterApplication.getRestClient();
+		setUpTextChangeListener();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater menuInflater = getMenuInflater();
 		menuInflater.inflate(R.menu.menu_compose, menu);
+		tvNumChars = new TextView(this);
+		tvNumChars.setPadding(0, 0, 15, 0);
+		tvNumChars.setTextSize(12);
+        final MenuItem menuItem = menu.findItem(R.id.miNumChars);
+        menuItem.setActionView(tvNumChars).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        tvNumChars.setText(getString(R.string.num_chars_default));
 		return true;
 	}
 
-    @Override
+	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch(item.getItemId()) {
     	case R.id.miTweetAction:
@@ -53,6 +64,23 @@ public class ComposeActivity extends Activity {
     		return true;
     	default: return super.onOptionsItemSelected(item);
     	}
+    }
+
+    private void setUpTextChangeListener() {
+	    etStatus.addTextChangedListener(new TextWatcher()
+	    {
+	        @Override
+	        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+	
+	        @Override
+	        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+	
+	        @Override
+	        public void afterTextChanged(Editable s)
+	        {
+	        	tvNumChars.setText(String.valueOf(140 - s.toString().length()));
+	        }
+	    });
     }
 
 	private void saveTweet() {
