@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONArray;
@@ -12,17 +13,32 @@ import org.json.JSONObject;
 
 import android.text.format.DateUtils;
 
-public class Tweet {
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Column.ForeignKeyAction;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
+
+@Table(name = "Tweets")
+public class Tweet extends Model {
 	private static final String TWITTER_DATE_FORMAT =
 			"EEE MMM dd HH:mm:ss ZZZZZ yyyy";
 
+	@Column(name = "body")
 	private String body;
-	private long id;
+	@Column(name = "tid", unique = true, onUniqueConflict=Column.ConflictAction.REPLACE)
+	private long tid;
+	@Column(name = "created_at")
 	private Date createdAt;
+	@Column(name = "user", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
 	private User user;
+	@Column(name = "is_retweet")
 	private boolean isRetweet;
+	@Column(name = "retweetedBy")
 	private String retweetedBy;
+	@Column(name = "retweet_count")
 	private long retweetCount;
+	@Column(name = "favorites_count")
 	private long favoritesCount;
 
 	public long getRetweetCount() {
@@ -43,11 +59,12 @@ public class Tweet {
 				jsonObject = jsonObject.getJSONObject("retweeted_status");
 			}
 			tweet.body = jsonObject.getString("text");
-			tweet.id = jsonObject.getLong("id");
+			tweet.tid = jsonObject.getLong("id");
 			tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
 			tweet.createdAt = getDateFromTwitterDate(jsonObject.getString("created_at"));
 			tweet.retweetCount = jsonObject.getLong("retweet_count");
 			tweet.favoritesCount = jsonObject.getLong("favorite_count");
+			//tweet.save();
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
@@ -101,8 +118,8 @@ public class Tweet {
 		return body;
 	}
 
-	public long getId() {
-		return id;
+	public long getTid() {
+		return tid;
 	}
 
 	public Date getCreatedAt() {
@@ -123,5 +140,12 @@ public class Tweet {
 		relativeTimeString = relativeTimeString.replace(" mins", "m");
 		relativeTimeString = relativeTimeString.replace(" days", "d");
 		return relativeTimeString;
+	}
+
+	public List<Tweet> getAll() {
+		return new Select()
+			.from(Tweet.class)
+			.orderBy("tid DESC")
+			.execute();
 	}
 }

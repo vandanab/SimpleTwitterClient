@@ -97,9 +97,8 @@ public class ComposeActivity extends Activity {
 			@Override
 			public void onSuccess(JSONObject jsonResponse) {
 				Intent i = new Intent();
-				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				Tweet tweet = Tweet.fromJSON(jsonResponse);
-				i.putExtra("id", tweet.getId() - 1);
+				i.putExtra("id", Long.valueOf(tweet.getTid() - 1L));
 				setResult(RESULT_OK, i);
 				finish();
 			}

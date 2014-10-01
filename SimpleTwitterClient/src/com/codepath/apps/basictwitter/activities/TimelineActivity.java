@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,18 +32,34 @@ public class TimelineActivity extends Activity {
 	private ArrayList<Tweet> tweets;
 	private ArrayAdapter<Tweet> tweetsAdapter;
 	private ListView lvTweets;
+	private SwipeRefreshLayout swipeContainer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
 		client = TwitterApplication.getRestClient();
-		populateTimeline(1L);
+		populateTimeline(1L, false);
 		lvTweets = (ListView) findViewById(R.id.lvTweets);
 		tweets = new ArrayList<Tweet>();
 		tweetsAdapter = new TweetArrayAdapter(this, tweets);
 		lvTweets.setAdapter(tweetsAdapter);
 		setupScrollListener();
+		setupSwipeListener();
+	}
+
+	private void setupSwipeListener() {
+		swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+            	populateTimeline(1L, true);
+            } 
+        });
 	}
 
 	private void setupScrollListener() {
@@ -91,14 +109,14 @@ public class TimelineActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if (requestCode == COMPOSE_REQUEST) {
 			if (resultCode == RESULT_OK) {
-				long sinceId = getIntent().getLongExtra("id", 1);
-				populateTimeline(sinceId);
+				//long sinceId = data.getLongExtra("id", 1);
+				populateTimeline(1L, false);
 				Toast.makeText(this, "Tweet composed!", Toast.LENGTH_SHORT).show();
 			}
     	}
 	}
 
-	public void populateTimeline(long sinceId) {
+	public void populateTimeline(final long sinceId, final boolean isSwipe) {
 		client.getHomeTimeline(sinceId, new JsonHttpResponseHandler() {
 
 			@Override
@@ -111,6 +129,9 @@ public class TimelineActivity extends Activity {
 			public void onSuccess(JSONArray jsonResponse) {
 				tweetsAdapter.clear();
 				tweetsAdapter.addAll(Tweet.fromJSONArray(jsonResponse));
+				if (isSwipe) {
+					swipeContainer.setRefreshing(false);
+				}
 			}
 
 		});

@@ -9,13 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.models.Tweet;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
+	private ImageLoader imageLoader;
 
 	private static class ViewHolder {
 		ImageView ivProfileImage;
@@ -30,6 +33,8 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 
 	public TweetArrayAdapter(Context context, List<Tweet> tweets) {
 		super(context, R.layout.tweet_item, tweets);
+		imageLoader = ImageLoader.getInstance();
+		imageLoader.init(ImageLoaderConfiguration.createDefault(context));
 	}
 
 	@Override
@@ -37,6 +42,7 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		Tweet tweet = getItem(position);
 
 		ViewHolder viewHolder;
+
 		if (convertView == null) {  // No recycled view.
 			viewHolder = new ViewHolder();
 			LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -47,7 +53,6 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		}
 
 		viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
-		ImageLoader imageLoader = ImageLoader.getInstance();
 		imageLoader.displayImage(tweet.getUser().getProfileImageUrl(), viewHolder.ivProfileImage);
 		viewHolder.tvBody.setText(tweet.getBody());
 		viewHolder.tvName.setText(Html.fromHtml("<b>" + tweet.getUser().getName() + "</b>"));
@@ -55,16 +60,38 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		viewHolder.tvCreatedAt.setText(tweet.getRelativeTimeString());
 		if (tweet.getRetweetCount() > 0) {
 			viewHolder.tvRetweets.setText(String.valueOf(tweet.getRetweetCount()));
+		} else {
+			viewHolder.tvRetweets.setText("");
 		}
 		if (tweet.getFavoritesCount() > 0) {
 			viewHolder.tvFavorites.setText(String.valueOf(tweet.getFavoritesCount()));
+		} else {
+			viewHolder.tvFavorites.setText("");
 		}
 		if (tweet.isRetweet()) {
 			viewHolder.tvRetweetedBy.setText(tweet.getRetweetedBy() + " retweeted");
+			viewHolder.tvRetweetedBy.setVisibility(View.VISIBLE);
+			viewHolder.tvRetweetedBy.setLayoutParams(getLayoutParams(View.VISIBLE));
 		} else {
-			viewHolder.tvRetweetedBy.setVisibility(View.GONE);
+			viewHolder.tvRetweetedBy.setVisibility(View.INVISIBLE);
+			viewHolder.tvRetweetedBy.setLayoutParams(getLayoutParams(View.INVISIBLE));
 		}
 		return convertView;
+	}
+
+	private RelativeLayout.LayoutParams getLayoutParams(int visibility) {
+		if (visibility == View.VISIBLE) {
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+					RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+			params.addRule(RelativeLayout.RIGHT_OF, R.id.ivProfileImage);
+			params.setMargins(0, 5, 0, 0);
+			return params;
+		} else {
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+					RelativeLayout.LayoutParams.WRAP_CONTENT, 0);
+			params.addRule(RelativeLayout.RIGHT_OF, R.id.ivProfileImage);
+			return params;
+		}
 	}
 
 	private void initializeViews(ViewHolder viewHolder, View convertView) {

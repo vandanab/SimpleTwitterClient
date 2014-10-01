@@ -62,8 +62,6 @@ public class LoginActivity extends OAuthLoginActivity<TwitterClient> {
 			});
 		}
 		Intent i = new Intent(this, TimelineActivity.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);                     
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(i);
 		//Toast.makeText(this, "Success!", Toast.LENGTH_SHORT).show();
 	}

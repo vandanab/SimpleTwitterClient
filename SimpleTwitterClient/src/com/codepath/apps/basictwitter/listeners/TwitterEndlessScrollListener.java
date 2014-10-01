@@ -56,14 +56,14 @@ public abstract class TwitterEndlessScrollListener implements OnScrollListener {
 			loading = false;
 			previousTotalItemCount = totalItemCount;
 			Tweet lastTweetInList = (Tweet) view.getAdapter().getItem(totalItemCount - 1);
-			this.currentMaxId = lastTweetInList.getId();
+			this.currentMaxId = lastTweetInList.getTid();
 		}
 		
 		// If it isn’t currently loading, we check to see if we have breached
 		// the visibleThreshold and need to reload more data.
 		// If we do need to reload some more data, we execute onLoadMore to fetch the data.
 		if (!loading && (totalItemCount - visibleItemCount)<=(firstVisibleItem + visibleThreshold)) {
-		    onLoadMore(this.currentMaxId + 1); // maxId is inclusive so adding 1.
+		    onLoadMore(this.currentMaxId - 1); // maxId is inclusive so subtracting 1, to go to next lower maxId
 		    loading = true;
 		}
 	}

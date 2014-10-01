@@ -5,10 +5,19 @@ import org.json.JSONObject;
 
 import android.content.SharedPreferences;
 
-public class User {
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+
+@Table(name = "Users")
+public class User extends Model {
+	@Column(name = "name")
 	private String name;
+	@Column(name = "uid", unique = true, onUniqueConflict=Column.ConflictAction.REPLACE)
 	private long uid;
+	@Column(name = "screen_name", unique = true, onUniqueConflict=Column.ConflictAction.REPLACE)
 	private String screenName;
+	@Column(name = "profile_image_url")
 	private String profileImageUrl;
 
 	public static User fromSharedPreferences(SharedPreferences prefs) {
@@ -27,6 +36,7 @@ public class User {
 			user.uid = jsonObject.getLong("id");
 			user.screenName = jsonObject.getString("screen_name");
 			user.profileImageUrl = jsonObject.getString("profile_image_url");
+			//user.save();
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;

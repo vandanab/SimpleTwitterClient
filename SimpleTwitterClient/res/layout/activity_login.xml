@@ -15,7 +15,6 @@
         android:layout_margin="20dp"
         android:onClick="loginToRest"
         android:background="#55acee"
-        android:text="@string/login_label"
-        android:noHistory="true" />
+        android:text="@string/login_label" />
 
 </RelativeLayout>
