@@ -1,5 +1,6 @@
 package com.codepath.apps.basictwitter.models;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
 @Table(name = "Tweets")
-public class Tweet extends Model {
+public class Tweet extends Model implements Serializable {
+	private static final long serialVersionUID = -4196204485284047120L;
+
 	private static final String TWITTER_DATE_FORMAT =
 			"EEE MMM dd HH:mm:ss ZZZZZ yyyy";
 
@@ -64,7 +67,7 @@ public class Tweet extends Model {
 			tweet.createdAt = getDateFromTwitterDate(jsonObject.getString("created_at"));
 			tweet.retweetCount = jsonObject.getLong("retweet_count");
 			tweet.favoritesCount = jsonObject.getLong("favorite_count");
-			//tweet.save();
+			tweet.save();
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
@@ -142,7 +145,7 @@ public class Tweet extends Model {
 		return relativeTimeString;
 	}
 
-	public List<Tweet> getAll() {
+	public static List<Tweet> getAll() {
 		return new Select()
 			.from(Tweet.class)
 			.orderBy("tid DESC")

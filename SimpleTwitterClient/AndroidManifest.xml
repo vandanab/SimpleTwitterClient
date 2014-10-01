@@ -49,8 +49,12 @@
             android:label="@string/title_activity_timeline" >
         </activity>
         <activity
-            android:name="com.codepath.apps.basictwitter.activities.ComposeActivity"
+            android:name=".activities.ComposeActivity"
             android:label="@string/title_activity_compose" >
+        </activity>
+        <activity
+            android:name=".TweetDetailsActivity"
+            android:label="@string/title_activity_tweet_details" >
         </activity>
     </application>
 

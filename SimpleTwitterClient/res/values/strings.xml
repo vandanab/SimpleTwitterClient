@@ -14,8 +14,13 @@
     <string name="tweet_body_default">This is a tweet body</string>
     <string name="compose_label">Compose Tweet</string>
     <string name="action_tweet">TWEET</string>
+    <string name="action_send">SEND</string>
     <string name="num_chars_default">140</string>
     <string name="title_activity_compose">Compose</string>
     <string name="status_hint">What\'s happening?</string>
+    <string name="title_activity_tweet_details">Tweet</string>
+    <string name="retweets_label">RETWEETS</string>
+    <string name="favorites_label">FAVORITES</string>
+    <string name="reply_hint">Reply</string>
 
 </resources>

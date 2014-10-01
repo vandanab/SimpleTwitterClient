@@ -1,5 +1,7 @@
 package com.codepath.apps.basictwitter.models;
 
+import java.io.Serializable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,7 +12,9 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
 @Table(name = "Users")
-public class User extends Model {
+public class User extends Model implements Serializable {
+	private static final long serialVersionUID = 2367391970349940530L;
+
 	@Column(name = "name")
 	private String name;
 	@Column(name = "uid", unique = true, onUniqueConflict=Column.ConflictAction.REPLACE)
@@ -36,7 +40,7 @@ public class User extends Model {
 			user.uid = jsonObject.getLong("id");
 			user.screenName = jsonObject.getString("screen_name");
 			user.profileImageUrl = jsonObject.getString("profile_image_url");
-			//user.save();
+			user.save();
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;

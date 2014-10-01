@@ -50,7 +50,7 @@ public class ComposeActivity extends Activity {
 		tvNumChars = new TextView(this);
 		tvNumChars.setPadding(0, 0, 15, 0);
 		tvNumChars.setTextSize(12);
-        final MenuItem menuItem = menu.findItem(R.id.miNumChars);
+        final MenuItem menuItem = menu.findItem(R.id.miNumCharsCompose);
         menuItem.setActionView(tvNumChars).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         tvNumChars.setText(getString(R.string.num_chars_default));
 		return true;

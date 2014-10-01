@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
-        android:id="@+id/miNumCharsCompose"
+        android:id="@+id/miNumCharsReply"
         android:orderInCategory="2"
         android:showAsAction="always"
         android:title="@string/num_chars_default" />
 
     <item
-        android:id="@+id/miTweetAction"
+        android:id="@+id/miTweetSendAction"
         android:orderInCategory="3"
         android:showAsAction="always"
-        android:title="@string/action_tweet" />
+        android:title="@string/action_send" />
 </menu>

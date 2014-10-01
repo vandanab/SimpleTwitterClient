@@ -1,11 +1,15 @@
 package com.codepath.apps.basictwitter.activities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -14,11 +18,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.codepath.apps.basictwitter.R;
+import com.codepath.apps.basictwitter.TweetDetailsActivity;
 import com.codepath.apps.basictwitter.TwitterApplication;
 import com.codepath.apps.basictwitter.TwitterClient;
 import com.codepath.apps.basictwitter.adapters.TweetArrayAdapter;
@@ -28,6 +35,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class TimelineActivity extends Activity {
 	private static final int COMPOSE_REQUEST = 2;
+	private static final int DETAILS_REQUEST = 3;
 	private TwitterClient client;
 	private ArrayList<Tweet> tweets;
 	private ArrayAdapter<Tweet> tweetsAdapter;
@@ -39,13 +47,23 @@ public class TimelineActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
 		client = TwitterApplication.getRestClient();
-		populateTimeline(1L, false);
 		lvTweets = (ListView) findViewById(R.id.lvTweets);
 		tweets = new ArrayList<Tweet>();
 		tweetsAdapter = new TweetArrayAdapter(this, tweets);
 		lvTweets.setAdapter(tweetsAdapter);
+		initializeTimeline();
 		setupScrollListener();
 		setupSwipeListener();
+		setUpListViewListeners();
+	}
+
+	private void initializeTimeline() {
+		List<Tweet> tweets = Tweet.getAll();
+		if (tweets.size() > 0) {
+			tweetsAdapter.addAll(tweets);
+		} else {
+			populateTimeline(false);
+		}
 	}
 
 	private void setupSwipeListener() {
@@ -57,7 +75,7 @@ public class TimelineActivity extends Activity {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-            	populateTimeline(1L, true);
+            	populateTimeline(true);
             } 
         });
 	}
@@ -70,6 +88,21 @@ public class TimelineActivity extends Activity {
 			}
 		});
     }
+
+	private void setUpListViewListeners() {
+    	// Delete items on long click on an item in the list.
+		lvTweets.setOnItemLongClickListener(new OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapter, View item,
+					int position, long id) {
+				Tweet t = (Tweet) adapter.getItemAtPosition(position);
+				Intent i = new Intent(TimelineActivity.this, TweetDetailsActivity.class);
+				i.putExtra("tweet", t);
+		    	startActivityForResult(i, DETAILS_REQUEST);
+				return false;
+			}
+		});
+	}
 
 	private void loadMoreDataFromApi(long maxId) {
 		client.getHomeTimelinePaginated(maxId, new JsonHttpResponseHandler() {
@@ -107,16 +140,24 @@ public class TimelineActivity extends Activity {
 
     @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	if (requestCode == COMPOSE_REQUEST) {
+    	if (requestCode == COMPOSE_REQUEST || requestCode == DETAILS_REQUEST) {
 			if (resultCode == RESULT_OK) {
-				//long sinceId = data.getLongExtra("id", 1);
-				populateTimeline(1L, false);
+		    	populateTimeline(false);
 				Toast.makeText(this, "Tweet composed!", Toast.LENGTH_SHORT).show();
 			}
     	}
 	}
 
-	public void populateTimeline(final long sinceId, final boolean isSwipe) {
+	public void populateTimeline(final boolean isSwipe) {
+		long sinceId = 1L;
+		if (tweetsAdapter.getCount() > 0) {
+			Tweet t = tweetsAdapter.getItem(0);
+			sinceId = t.getTid();
+		}
+		if (!isNetworkAvailable()) {
+			Toast.makeText(this, "Network not available!", Toast.LENGTH_SHORT).show();
+    		return;
+		}
 		client.getHomeTimeline(sinceId, new JsonHttpResponseHandler() {
 
 			@Override
@@ -127,14 +168,21 @@ public class TimelineActivity extends Activity {
 
 			@Override
 			public void onSuccess(JSONArray jsonResponse) {
-				tweetsAdapter.clear();
-				tweetsAdapter.addAll(Tweet.fromJSONArray(jsonResponse));
+				tweets.addAll(0, Tweet.fromJSONArray(jsonResponse));
+				tweetsAdapter.notifyDataSetChanged();
 				if (isSwipe) {
 					swipeContainer.setRefreshing(false);
 				}
 			}
 
 		});
+	}
+
+	private boolean isNetworkAvailable() {
+    	ConnectivityManager connectivityManager = 
+    			(ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+	    return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
 	}
 
     public void replyToTweet(View v) {

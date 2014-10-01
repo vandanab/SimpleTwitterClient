@@ -61,6 +61,14 @@ public class TwitterClient extends OAuthBaseClient {
 		client.post(apiUrl, params, handler);
 	}
 
+	public void postReply(String status, long replyToId, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/update.json");
+		RequestParams params = new RequestParams();
+		params.put("status", String.valueOf(status));
+		params.put("in_reply_to_status_id", String.valueOf(replyToId));
+		client.post(apiUrl, params, handler);
+	}
+
 	// CHANGE THIS
 	// DEFINE METHODS for different API endpoints here
 	/*public void getInterestingnessList(AsyncHttpResponseHandler handler) {
