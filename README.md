@@ -1,7 +1,7 @@
 SimpleTwitterClient
 ===================
 
-A simple twitter android app.
+A simple twitter android app. Users can view their timeline, compose tweets, view tweet in detail and reply to a tweet.
 
 Time spent: 40 hrs
 
@@ -30,6 +30,7 @@ Optional:
 
 Notes:
 Spent quite some time in getting the scrolling, playing with the db, branding and layout of the app.
+Had fun configuring the action bar for number of chars left in the tweet.
 
 Walkthrough of all user stories:
 
