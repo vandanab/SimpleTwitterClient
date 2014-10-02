@@ -52,6 +52,7 @@ public class TimelineActivity extends Activity {
 		tweetsAdapter = new TweetArrayAdapter(this, tweets);
 		lvTweets.setAdapter(tweetsAdapter);
 		initializeTimeline();
+		//populateTimeline(false);
 		setupScrollListener();
 		setupSwipeListener();
 		setUpListViewListeners();
