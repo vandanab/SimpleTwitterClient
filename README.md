@@ -34,4 +34,4 @@ Had fun configuring the action bar for number of chars left in the tweet.
 
 Walkthrough of all user stories:
 
-![Video Walkthrough]()
+![Video Walkthrough](twitter_client_1.gif)
