@@ -32,21 +32,53 @@ public class TwitterClient extends OAuthBaseClient {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
 	}
 
-	
-	public void getHomeTimeline(long sinceId, AsyncHttpResponseHandler handler) {
+	public void getHomeTimeline(long sinceId, long maxId, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		RequestParams params = new RequestParams();
-		params.put("since_id", String.valueOf(sinceId));
+		if (sinceId > 0L) {
+			params.put("since_id", String.valueOf(sinceId));
+		}
+		if (maxId > 0L) {
+			params.put("max_id", String.valueOf(maxId));
+		}
 		client.get(apiUrl, params, handler);
 		// apis which are http get requests, for post requests we will need to call client.post()
 	}
 
-	public void getHomeTimelinePaginated(long maxId, AsyncHttpResponseHandler handler) {
-		String apiUrl = getApiUrl("statuses/home_timeline.json");
+	public void getMentionsTimeline(long sinceId, long maxId, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
 		RequestParams params = new RequestParams();
-		params.put("max_id", String.valueOf(maxId));
+		if (sinceId > 0L) {
+			params.put("since_id", String.valueOf(sinceId));
+		}
+		if (maxId > 0L) {
+			params.put("max_id", String.valueOf(maxId));
+		}
 		client.get(apiUrl, params, handler);
-		// apis which are http get requests, for post requests we will need to call client.post()
+	}
+
+	public void getUserTimeline(long userId, long sinceId, long maxId, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/user_timeline.json");
+		if (userId > 0L) {
+			RequestParams params = new RequestParams();
+			params.put("user_id", String.valueOf(userId));
+			if (sinceId > 0L) {
+				params.put("since_id", String.valueOf(sinceId));
+			}
+			if (maxId > 0L) {
+				params.put("max_id", String.valueOf(maxId));
+			}
+			client.get(apiUrl, params, handler);
+		} else {
+			client.get(apiUrl, null, handler);
+		}
+	}
+
+	public void getProfileBanner(long userId, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("users/profile_banner.json");
+		RequestParams params = new RequestParams();
+		params.put("user_id", String.valueOf(userId));
+		client.get(apiUrl, params, handler);
 	}
 
 	public void getUserInfo(AsyncHttpResponseHandler handler) {

@@ -7,6 +7,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.models.Tweet;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -34,7 +36,14 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 	public TweetArrayAdapter(Context context, List<Tweet> tweets) {
 		super(context, R.layout.tweet_item, tweets);
 		imageLoader = ImageLoader.getInstance();
-		imageLoader.init(ImageLoaderConfiguration.createDefault(context));
+		if (!imageLoader.isInited()) {
+			DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder().
+					cacheInMemory().cacheOnDisc().build();
+			ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
+					.defaultDisplayImageOptions(defaultOptions)
+					.build();
+			imageLoader.init(config);
+		}
 	}
 
 	@Override
@@ -54,6 +63,8 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 
 		viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
 		imageLoader.displayImage(tweet.getUser().getProfileImageUrl(), viewHolder.ivProfileImage);
+		viewHolder.ivProfileImage.setTag(tweet.getUser());
+
 		viewHolder.tvBody.setText(tweet.getBody());
 		viewHolder.tvName.setText(Html.fromHtml("<b>" + tweet.getUser().getName() + "</b>"));
 		viewHolder.tvScreenName.setText("@" + tweet.getUser().getScreenName());
@@ -82,13 +93,13 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 	private RelativeLayout.LayoutParams getLayoutParams(int visibility) {
 		if (visibility == View.VISIBLE) {
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-					RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			params.addRule(RelativeLayout.RIGHT_OF, R.id.ivProfileImage);
 			params.setMargins(0, 5, 0, 0);
 			return params;
 		} else {
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-					RelativeLayout.LayoutParams.WRAP_CONTENT, 0);
+					LayoutParams.WRAP_CONTENT, 0);
 			params.addRule(RelativeLayout.RIGHT_OF, R.id.ivProfileImage);
 			return params;
 		}

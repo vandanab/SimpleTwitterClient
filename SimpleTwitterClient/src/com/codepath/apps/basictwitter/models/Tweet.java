@@ -29,8 +29,10 @@ public class Tweet extends Model implements Serializable {
 
 	@Column(name = "body")
 	private String body;
-	@Column(name = "tid", unique = true, onUniqueConflict=Column.ConflictAction.REPLACE)
+	@Column(name = "tid")
 	private long tid;
+	@Column(name = "theid", unique = true, onUniqueConflict=Column.ConflictAction.IGNORE)
+	private String theid;
 	@Column(name = "created_at")
 	private Date createdAt;
 	@Column(name = "user", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
@@ -43,6 +45,12 @@ public class Tweet extends Model implements Serializable {
 	private long retweetCount;
 	@Column(name = "favorites_count")
 	private long favoritesCount;
+	@Column(name = "source")
+	private Source source;
+
+	public enum Source {
+		HOME, MENTIONS, USER, COMPOSE
+	}
 
 	public long getRetweetCount() {
 		return retweetCount;
@@ -52,7 +60,7 @@ public class Tweet extends Model implements Serializable {
 		return favoritesCount;
 	}
 
-	public static Tweet fromJSON(JSONObject jsonObject) {
+	public static Tweet fromJSON(JSONObject jsonObject, Source source) {
 		Tweet tweet = new Tweet();
 		// Extract values from the json to populate the member variables.
 		try {
@@ -67,7 +75,9 @@ public class Tweet extends Model implements Serializable {
 			tweet.createdAt = getDateFromTwitterDate(jsonObject.getString("created_at"));
 			tweet.retweetCount = jsonObject.getLong("retweet_count");
 			tweet.favoritesCount = jsonObject.getLong("favorite_count");
-			tweet.save();
+			tweet.source = source;
+			tweet.theid = String.valueOf(jsonObject.getLong("id")) + "_" + source.toString();
+			//tweet.save();
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
@@ -94,7 +104,7 @@ public class Tweet extends Model implements Serializable {
 		return null;
 	}
 
-	public static ArrayList<Tweet> fromJSONArray(JSONArray jsonArray) {
+	public static ArrayList<Tweet> fromJSONArray(JSONArray jsonArray, Source source) {
 		ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject tweetJSON = null;
@@ -104,7 +114,7 @@ public class Tweet extends Model implements Serializable {
 				e.printStackTrace();
 				continue;
 			}
-			Tweet tweet = Tweet.fromJSON(tweetJSON);
+			Tweet tweet = Tweet.fromJSON(tweetJSON, source);
 			if (tweet != null) {
 				tweets.add(tweet);
 			}
@@ -145,9 +155,10 @@ public class Tweet extends Model implements Serializable {
 		return relativeTimeString;
 	}
 
-	public static List<Tweet> getAll() {
+	public static List<Tweet> getAll(Source source) {
 		return new Select()
 			.from(Tweet.class)
+			.where("source = " + source)
 			.orderBy("tid DESC")
 			.execute();
 	}

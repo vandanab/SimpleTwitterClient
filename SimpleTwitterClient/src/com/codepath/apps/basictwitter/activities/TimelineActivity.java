@@ -1,125 +1,56 @@
 package com.codepath.apps.basictwitter.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.util.Log;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.codepath.apps.basictwitter.R;
-import com.codepath.apps.basictwitter.TweetDetailsActivity;
-import com.codepath.apps.basictwitter.TwitterApplication;
-import com.codepath.apps.basictwitter.TwitterClient;
-import com.codepath.apps.basictwitter.adapters.TweetArrayAdapter;
-import com.codepath.apps.basictwitter.listeners.TwitterEndlessScrollListener;
-import com.codepath.apps.basictwitter.models.Tweet;
-import com.loopj.android.http.JsonHttpResponseHandler;
+import com.codepath.apps.basictwitter.fragments.HomeTimelineFragment;
+import com.codepath.apps.basictwitter.fragments.MentionsTimelineFragment;
+import com.codepath.apps.basictwitter.fragments.TweetsListFragment;
+import com.codepath.apps.basictwitter.listeners.SupportFragmentTabListener;
+import com.codepath.apps.basictwitter.models.User;
 
-public class TimelineActivity extends Activity {
+public class TimelineActivity extends ActionBarActivity implements
+		TweetsListFragment.OnImageClickListener {
 	private static final int COMPOSE_REQUEST = 2;
-	private static final int DETAILS_REQUEST = 3;
-	private TwitterClient client;
-	private ArrayList<Tweet> tweets;
-	private ArrayAdapter<Tweet> tweetsAdapter;
-	private ListView lvTweets;
-	private SwipeRefreshLayout swipeContainer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-		client = TwitterApplication.getRestClient();
-		lvTweets = (ListView) findViewById(R.id.lvTweets);
-		tweets = new ArrayList<Tweet>();
-		tweetsAdapter = new TweetArrayAdapter(this, tweets);
-		lvTweets.setAdapter(tweetsAdapter);
-		initializeTimeline();
-		//populateTimeline(false);
-		setupScrollListener();
-		setupSwipeListener();
-		setUpListViewListeners();
+		setupTabs();
 	}
 
-	private void initializeTimeline() {
-		List<Tweet> tweets = Tweet.getAll();
-		if (tweets.size() > 0) {
-			tweetsAdapter.addAll(tweets);
-		} else {
-			populateTimeline(false);
-		}
-	}
+	private void setupTabs() {
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowTitleEnabled(true);
 
-	private void setupSwipeListener() {
-		swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-            	populateTimeline(true);
-            } 
-        });
-	}
+		Tab homeTimelineTab = actionBar
+		    .newTab()
+		    .setText("Home")
+		    .setTag("HomeTimelineFragment")
+		    .setTabListener(new SupportFragmentTabListener<HomeTimelineFragment>(R.id.flContainer, this,
+                        "home", HomeTimelineFragment.class));
 
-	private void setupScrollListener() {
-		lvTweets.setOnScrollListener(new TwitterEndlessScrollListener() {
-			@Override
-			public void onLoadMore(long maxId) {
-				loadMoreDataFromApi(maxId);	
-			}
-		});
-    }
+		actionBar.addTab(homeTimelineTab);
+		actionBar.selectTab(homeTimelineTab);
 
-	private void setUpListViewListeners() {
-    	// Delete items on long click on an item in the list.
-		lvTweets.setOnItemLongClickListener(new OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> adapter, View item,
-					int position, long id) {
-				Tweet t = (Tweet) adapter.getItemAtPosition(position);
-				Intent i = new Intent(TimelineActivity.this, TweetDetailsActivity.class);
-				i.putExtra("tweet", t);
-		    	startActivityForResult(i, DETAILS_REQUEST);
-				return false;
-			}
-		});
-	}
-
-	private void loadMoreDataFromApi(long maxId) {
-		client.getHomeTimelinePaginated(maxId, new JsonHttpResponseHandler() {
-
-			@Override
-			public void onFailure(Throwable e, String s) {
-				Log.d("DEBUG", e.toString());
-				Log.d("DEBUG", s.toString());
-			}
-
-			@Override
-			public void onSuccess(JSONArray jsonResponse) {
-				tweetsAdapter.addAll(Tweet.fromJSONArray(jsonResponse));
-			}
-
-		});
+		Tab mentionsTimelineTab = actionBar
+		    .newTab()
+		    .setText("Mentions")
+		    .setTag("MentionsTimelineFragment")
+		    .setTabListener(new SupportFragmentTabListener<MentionsTimelineFragment>(R.id.flContainer, this,
+                        "mentions", MentionsTimelineFragment.class));
+		actionBar.addTab(mentionsTimelineTab);
+		
 	}
 
 	@Override
@@ -139,83 +70,67 @@ public class TimelineActivity extends Activity {
     	}
     }
 
-    @Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	if (requestCode == COMPOSE_REQUEST || requestCode == DETAILS_REQUEST) {
-			if (resultCode == RESULT_OK) {
-		    	populateTimeline(false);
-				Toast.makeText(this, "Tweet composed!", Toast.LENGTH_SHORT).show();
-			}
+    private TweetsListFragment getFragment() {
+    	TweetsListFragment fragment = (TweetsListFragment) getSupportFragmentManager()
+    			.findFragmentByTag("home");
+    	if (fragment == null) {
+    		fragment = (TweetsListFragment) getSupportFragmentManager()
+        			.findFragmentByTag("mentions");
     	}
-	}
-
-	public void populateTimeline(final boolean isSwipe) {
-		long sinceId = 1L;
-		if (tweetsAdapter.getCount() > 0) {
-			Tweet t = tweetsAdapter.getItem(0);
-			sinceId = t.getTid();
-		}
-		if (!isNetworkAvailable()) {
-			Toast.makeText(this, "Network not available!", Toast.LENGTH_SHORT).show();
-    		return;
-		}
-		client.getHomeTimeline(sinceId, new JsonHttpResponseHandler() {
-
-			@Override
-			public void onFailure(Throwable e, String s) {
-				Log.d("DEBUG", e.toString());
-				Log.d("DEBUG", s.toString());
-			}
-
-			@Override
-			public void onSuccess(JSONArray jsonResponse) {
-				tweets.addAll(0, Tweet.fromJSONArray(jsonResponse));
-				tweetsAdapter.notifyDataSetChanged();
-				if (isSwipe) {
-					swipeContainer.setRefreshing(false);
-				}
-			}
-
-		});
-	}
-
-	private boolean isNetworkAvailable() {
-    	ConnectivityManager connectivityManager = 
-    			(ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-	    return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
-	}
-
-    public void replyToTweet(View v) {
-    	
-    }
-
-    public void retweet(View v) {
-    	/*TextView retweets = (TextView) v;
-    	String numRetweets = retweets.getText().toString();
-    	int num = (numRetweets != "" && Long.valueOf(numRetweets) != null) ? Long.valueOf(numRetweets).intValue() : 0;
-    	boolean isSelected = retweets.isSelected();
-    	if (isSelected) {
-    		retweets.setText(String.valueOf(num + 1));
-    	} else {
-    		retweets.setText(String.valueOf(num - 1));
-    	}*/
-    }
-
-    public void markFavorite(View v) {
-    	/*TextView favorites = (TextView) v;
-    	String numFavorites = favorites.getText().toString();
-    	int num = (numFavorites != "" && Long.valueOf(numFavorites) != null) ? Long.valueOf(numFavorites).intValue() : 0;
-    	boolean isSelected = favorites.isSelected();
-    	if (isSelected) {
-    		favorites.setText(String.valueOf(num + 1));
-    	} else {
-    		favorites.setText(String.valueOf(num - 1));
-    	}*/
+    	return fragment;
     }
 
     private void composeTweet() {
     	Intent i = new Intent(this, ComposeActivity.class);
     	startActivityForResult(i, COMPOSE_REQUEST);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if (requestCode == COMPOSE_REQUEST) {
+    		if (resultCode == RESULT_OK) {
+    			TweetsListFragment fragment = getFragment();
+    	    	if (fragment != null) {
+    	    		fragment.refreshTimeline();
+    	    	}
+    		}
+    	}	
+    }
+
+    public void replyToTweet(View v) {
+    	
+    }
+
+    public void retweet(View v) {
+    	TweetsListFragment fragment = getFragment();
+    	if (fragment != null) {
+    		fragment.retweet(v);
+    	}
+    }
+
+    public void markFavorite(View v) {
+    	TweetsListFragment fragment = getFragment();
+    	if (fragment != null) {
+    		fragment.markFavorite(v);
+    	}
+    }
+
+    public void onProfileView(MenuItem mi) {
+    	Intent i = new Intent(this, ProfileActivity.class);
+    	startActivity(i);
+    }
+
+    public void onProfileImageClicked(View v) {
+    	TweetsListFragment fragment = getFragment();
+    	if (fragment != null) {
+    		fragment.onProfileImageClicked(v);
+    	}
+    }
+    
+	@Override
+	public void onProfileImageClicked(User user) {
+		Intent i = new Intent(this, ProfileActivity.class);
+		i.putExtra("user", user);
+		startActivity(i);
+	}
 }

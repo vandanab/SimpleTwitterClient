@@ -2,6 +2,7 @@ package com.codepath.apps.basictwitter;
 
 import android.content.Context;
 
+import com.codepath.oauth.OAuthBaseClient;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -33,6 +34,6 @@ public class TwitterApplication extends com.activeandroid.app.Application {
 	}
 
 	public static TwitterClient getRestClient() {
-		return (TwitterClient) TwitterClient.getInstance(TwitterClient.class, TwitterApplication.context);
+		return (TwitterClient) OAuthBaseClient.getInstance(TwitterClient.class, TwitterApplication.context);
 	}
 }

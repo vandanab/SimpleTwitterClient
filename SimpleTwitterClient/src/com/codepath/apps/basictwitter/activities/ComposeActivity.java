@@ -5,7 +5,6 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -23,6 +22,7 @@ import com.codepath.apps.basictwitter.TwitterApplication;
 import com.codepath.apps.basictwitter.TwitterClient;
 import com.codepath.apps.basictwitter.models.Tweet;
 import com.codepath.apps.basictwitter.models.User;
+import com.codepath.apps.basictwitter.models.Tweet.Source;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -97,7 +97,7 @@ public class ComposeActivity extends Activity {
 			@Override
 			public void onSuccess(JSONObject jsonResponse) {
 				Intent i = new Intent();
-				Tweet tweet = Tweet.fromJSON(jsonResponse);
+				Tweet tweet = Tweet.fromJSON(jsonResponse, Tweet.Source.COMPOSE);
 				i.putExtra("id", Long.valueOf(tweet.getTid() - 1L));
 				setResult(RESULT_OK, i);
 				finish();

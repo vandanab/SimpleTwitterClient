@@ -4,8 +4,29 @@
         Base application theme for API 11+. This theme completely replaces
         AppBaseTheme from res/values/styles.xml on API 11+ devices.
     -->
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.Light">
         <!-- API 11 theme customizations can go here. -->
+    </style>
+    
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="actionBarStyle">@style/TwitterActionBar</item>
+    </style>
+
+    <!-- custom styles for the action bar -->
+    <style name="TwitterActionBar"
+           parent="@style/Widget.AppCompat.Light.ActionBar">
+        <item name="background">@color/actionbar_background</item>
+        <item name="backgroundSplit">@color/actionbar_text</item>
+        <item name="titleTextStyle">@style/TwitterTitleTextStyle</item>
+    </style>
+
+    <!-- ActionBar title text -->
+    <style name="TwitterTitleTextStyle"
+           parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/actionbar_text</item>
+        <item name="android:showDividers">beginning</item>
     </style>
 
 </resources>

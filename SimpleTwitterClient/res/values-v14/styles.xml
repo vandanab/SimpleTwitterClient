@@ -5,8 +5,71 @@
         AppBaseTheme from BOTH res/values/styles.xml and
         res/values-v11/styles.xml on API 14+ devices.
     -->
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.Light">
         <!-- API 14 theme customizations can go here. -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <!-- <item name="actionBarStyle">@style/TwitterActionBar</item> -->
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_twitteractionbar</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Twitteractionbar</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Twitteractionbar</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Twitteractionbar</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Twitteractionbar</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.Twitteractionbar</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_twitteractionbar</item>
+        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_twitteractionbar</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Twitteractionbar</item>
+    	<item name="android:actionOverflowButtonStyle">@style/ActionOverFlow.Twitteractionbar</item>
+    </style>
+
+    <style name="ActionBar.Solid.Twitteractionbar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="android:background">@drawable/ab_solid_twitteractionbar</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_twitteractionbar</item>
+        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_twitteractionbar</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Twitteractionbar</item>
+        <item name="android:titleTextStyle">@style/TwitterTitleTextStyle</item>
+    </style>
+
+    <style name="ActionBar.Transparent.Twitteractionbar" parent="@style/Widget.AppCompat.Light.ActionBar">
+        <item name="android:background">@drawable/ab_transparent_twitteractionbar</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Twitteractionbar</item>
+    </style>
+    
+    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+    <style name="Theme.Twitteractionbar.Widget" parent="@style/Theme.AppCompat">
+        <item name="android:popupMenuStyle">@style/PopupMenu.Twitteractionbar</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Twitteractionbar</item>
+    </style>
+
+    <style name="ActionBarTabStyle.Twitteractionbar" parent="@style/Widget.AppCompat.Light.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_ab_twitteractionbar</item>
+        <item name="android:actionBarTabTextStyle">@style/TwitterTabTextStyle</item>
+    </style>
+
+    <style name="ActionOverFlow.Twitteractionbar" parent="@style/Widget.AppCompat.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_action_core_overflow</item>
+    </style>
+
+    <!-- custom styles for the action bar -->
+    <!-- <style name="TwitterActionBar"
+           parent="@style/Widget.AppCompat.Light.ActionBar">
+        <item name="background">@color/actionbar_background</item>
+        <item name="titleTextStyle">@style/TwitterTitleTextStyle</item>
+    </style> -->
+
+    <!-- ActionBar title text -->
+    <style name="TwitterTitleTextStyle"
+           parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/actionbar_text</item>
+        <item name="android:showDividers">beginning</item>
+    </style>
+
+    <style name="TwitterTabTextStyle"
+        	parent="@style/Widget.AppCompat.ActionBar.TabText">
+        <item name="android:textColor">@color/actionbar_background</item>
     </style>
 
 </resources>

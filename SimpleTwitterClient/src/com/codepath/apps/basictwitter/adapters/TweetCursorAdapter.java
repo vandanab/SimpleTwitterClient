@@ -7,6 +7,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -79,13 +80,13 @@ public class TweetCursorAdapter extends SimpleCursorAdapter {
 	private RelativeLayout.LayoutParams getLayoutParams(int visibility) {
 		if (visibility == View.VISIBLE) {
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-					RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			params.addRule(RelativeLayout.RIGHT_OF, R.id.ivProfileImage);
 			params.setMargins(0, 5, 0, 0);
 			return params;
 		} else {
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-					RelativeLayout.LayoutParams.WRAP_CONTENT, 0);
+					LayoutParams.WRAP_CONTENT, 0);
 			params.addRule(RelativeLayout.RIGHT_OF, R.id.ivProfileImage);
 			return params;
 		}

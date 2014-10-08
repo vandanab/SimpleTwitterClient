@@ -8,11 +8,14 @@
     <string name="title_activity_photos">Flickr Photos</string>
     <string name="login_label">Connect to Twitter</string>
     <string name="title_activity_timeline">Home</string>
+    <string name="title_home_timeline">Home</string>
+    <string name="title_mentions_timeline">Mentions</string>
     <string name="screen_name_default">\@foo</string>
     <string name="name_default">VB</string>
     <string name="created_at_default">10m</string>
     <string name="tweet_body_default">This is a tweet body</string>
     <string name="compose_label">Compose Tweet</string>
+    <string name="profile_label">Profile</string>
     <string name="action_tweet">TWEET</string>
     <string name="action_send">SEND</string>
     <string name="num_chars_default">140</string>
@@ -21,6 +24,11 @@
     <string name="title_activity_tweet_details">Tweet</string>
     <string name="retweets_label">RETWEETS</string>
     <string name="favorites_label">FAVORITES</string>
+    <string name="tweets_label">TWEETS</string>
+    <string name="followers_label">FOLLOWERS</string>
+    <string name="following_label">FOLLOWING</string>
     <string name="reply_hint">Reply</string>
+    <string name="title_activity_profile">Profile</string>
+    <string name="tagline_default">Tagline</string>
 
 </resources>
