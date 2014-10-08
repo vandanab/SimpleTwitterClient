@@ -76,7 +76,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="5dp"
         android:text="Tweet text"
         android:autoLink="web" />
 
@@ -170,7 +172,7 @@
 	<LinearLayout
 	    android:id="@+id/llActionIcons"
 	    android:layout_width="match_parent"
-        android:layout_height="25dp"
+        android:layout_height="20dp"
         android:layout_below="@id/vhl2"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
@@ -230,6 +232,7 @@
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentRight="true"
 	    android:hint="@string/reply_hint"
-	    android:inputType="textMultiLine" />
+	    android:inputType="textMultiLine"
+	    android:textSize="14sp" />
 	
 </RelativeLayout>
