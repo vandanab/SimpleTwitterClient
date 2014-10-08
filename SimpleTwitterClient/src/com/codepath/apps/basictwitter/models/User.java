@@ -66,21 +66,25 @@ public class User extends Model implements Serializable {
 
 	public static User fromSharedPreferences(SharedPreferences prefs) {
 		User user = new User();
-		user.screenName = prefs.getString("screen_name", null);
-		user.name = prefs.getString("name", null);
-		user.profileImageUrl = prefs.getString("profile_image_url", null);
+		user.screenName = prefs.getString("screen_name", "");
+		user.name = prefs.getString("name", "");
+		user.profileImageUrl = prefs.getString("profile_image_url", "");
 		user.uid = prefs.getLong("uid", 0);
+		user.followersCount = prefs.getLong("followers_count", 0);
+		user.tweetsCount = prefs.getLong("statuses_count", 0);
+		user.followingCount = prefs.getLong("friends_count", 0);
+	    user.tagLine = prefs.getString("tagline", "");
 		return user;
 	}
 
 	public static User fromJSON(JSONObject jsonObject) {
 		try {
 			long id = jsonObject.getLong("id");
-			/*User user = getUserById(id);
+			User user = getUserById(id);
 			if (user != null) {
 				return user;
-			}*/
-			User user = new User();
+			}
+			user = new User();
 			user.name = jsonObject.getString("name");
 			user.uid = id;
 			user.screenName = jsonObject.getString("screen_name");
@@ -91,7 +95,7 @@ public class User extends Model implements Serializable {
 			user.followingCount = jsonObject.getLong("friends_count");
 			user.tweetsCount = jsonObject.getLong("statuses_count");
 			user.tagLine = jsonObject.getString("description");
-			//user.save();
+			user.save();
 			return user;
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -124,6 +128,10 @@ public class User extends Model implements Serializable {
 			.from(User.class)
 			.where("uid=" + uid)
 			.execute();
-		return user.get(0);
+		if (user != null && !user.isEmpty()) {
+			return user.get(0);
+		} else {
+			return null;
+		}
 	}
 }

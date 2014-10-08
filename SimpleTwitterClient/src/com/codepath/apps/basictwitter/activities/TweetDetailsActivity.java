@@ -29,6 +29,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class TweetDetailsActivity extends Activity {
 	private ImageView ivProfileImage;
+	private ImageView ivDetailsMedia;
 	private TextView tvScreenName;
 	private TextView tvName;
 	private EditText etReply;
@@ -77,6 +78,7 @@ public class TweetDetailsActivity extends Activity {
 	private void populateView() {
 		User u = t.getUser();
     	ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+    	ivDetailsMedia = (ImageView) findViewById(R.id.ivDetailsMedia);
     	tvScreenName = (TextView) findViewById(R.id.tvScreenName);
     	tvName = (TextView) findViewById(R.id.tvName);
     	tvBody = (TextView) findViewById(R.id.tvBody);
@@ -93,6 +95,7 @@ public class TweetDetailsActivity extends Activity {
 		tvScreenName.setText("@" + u.getScreenName());
 		tvBody.setText(t.getBody());
 		tvCreatedAt.setText(t.getCreatedAt().toString());
+		
 		if (t.isRetweet()) {
 			tvRetweetedBy.setText(t.getRetweetedBy() + " retweeted");
 			tvRetweetedBy.setVisibility(View.VISIBLE);
@@ -101,8 +104,38 @@ public class TweetDetailsActivity extends Activity {
 			tvRetweetedBy.setVisibility(View.INVISIBLE);
 			tvRetweetedBy.setLayoutParams(getLayoutParams(View.INVISIBLE));
 		}
+		
+		if (t.getMediaUrl() != null) {
+			ivDetailsMedia.setImageResource(android.R.color.transparent);
+			imageLoader.displayImage(t.getMediaUrl(), ivDetailsMedia);
+			ivDetailsMedia.setVisibility(View.VISIBLE);
+			ivDetailsMedia.setLayoutParams(getLayoutParamsImage(View.VISIBLE));
+		} else {
+			ivDetailsMedia.setVisibility(View.INVISIBLE);
+			ivDetailsMedia.setLayoutParams(getLayoutParamsImage(View.INVISIBLE));
+		}
+		
 		tvRetweets.setText(String.valueOf(t.getRetweetCount()));
 		tvFavorites.setText(String.valueOf(t.getFavoritesCount()));
+		
+		etReply.setText("@" + u.getScreenName() + " ");
+		etReply.setSelection(etReply.getText().length());
+	}
+
+	private RelativeLayout.LayoutParams getLayoutParamsImage(int visible) {
+		if (visible == View.VISIBLE) {
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+					LayoutParams.MATCH_PARENT, 480);
+			params.addRule(RelativeLayout.BELOW, R.id.tvBody);
+			params.setMargins(10, 0, 10, 0);
+			return params;
+		} else {
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+					LayoutParams.WRAP_CONTENT, 0);
+			params.addRule(RelativeLayout.BELOW, R.id.tvBody);
+			params.setMargins(0, 0, 0, 0);
+			return params;
+		}
 	}
 
 	private void setUpTextChangeListener() {

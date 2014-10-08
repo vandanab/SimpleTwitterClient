@@ -15,11 +15,13 @@ import com.codepath.apps.basictwitter.fragments.HomeTimelineFragment;
 import com.codepath.apps.basictwitter.fragments.MentionsTimelineFragment;
 import com.codepath.apps.basictwitter.fragments.TweetsListFragment;
 import com.codepath.apps.basictwitter.listeners.SupportFragmentTabListener;
+import com.codepath.apps.basictwitter.models.Tweet;
 import com.codepath.apps.basictwitter.models.User;
 
 public class TimelineActivity extends ActionBarActivity implements
 		TweetsListFragment.OnImageClickListener {
 	private static final int COMPOSE_REQUEST = 2;
+	private static final int DETAILS_REQUEST = 3;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,18 +89,21 @@ public class TimelineActivity extends ActionBarActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	if (requestCode == COMPOSE_REQUEST) {
+    	if (requestCode == COMPOSE_REQUEST || requestCode == DETAILS_REQUEST) {
     		if (resultCode == RESULT_OK) {
     			TweetsListFragment fragment = getFragment();
     	    	if (fragment != null) {
     	    		fragment.refreshTimeline();
     	    	}
     		}
-    	}	
+    	}
     }
 
     public void replyToTweet(View v) {
-    	
+    	Tweet t = (Tweet) v.getTag();
+    	Intent i = new Intent(this, TweetDetailsActivity.class);
+		i.putExtra("tweet", t);
+		startActivityForResult(i, DETAILS_REQUEST);
     }
 
     public void retweet(View v) {

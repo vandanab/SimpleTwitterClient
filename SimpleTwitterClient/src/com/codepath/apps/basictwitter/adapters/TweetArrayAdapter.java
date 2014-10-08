@@ -24,6 +24,7 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 
 	private static class ViewHolder {
 		ImageView ivProfileImage;
+		ImageView ivDetailsMedia;
 		TextView tvBody;
 		TextView tvName;
 		TextView tvScreenName;
@@ -31,6 +32,7 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		TextView tvRetweetedBy;
 		TextView tvRetweets;
 		TextView tvFavorites;
+		TextView tvReply;
 	}
 
 	public TweetArrayAdapter(Context context, List<Tweet> tweets) {
@@ -64,6 +66,7 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
 		imageLoader.displayImage(tweet.getUser().getProfileImageUrl(), viewHolder.ivProfileImage);
 		viewHolder.ivProfileImage.setTag(tweet.getUser());
+		viewHolder.tvReply.setTag(tweet);
 
 		viewHolder.tvBody.setText(tweet.getBody());
 		viewHolder.tvName.setText(Html.fromHtml("<b>" + tweet.getUser().getName() + "</b>"));
@@ -87,7 +90,34 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 			viewHolder.tvRetweetedBy.setVisibility(View.INVISIBLE);
 			viewHolder.tvRetweetedBy.setLayoutParams(getLayoutParams(View.INVISIBLE));
 		}
+		if (tweet.getMediaUrl() != null) {
+			viewHolder.ivDetailsMedia.setImageResource(android.R.color.transparent);
+			imageLoader.displayImage(tweet.getMediaUrl(), viewHolder.ivDetailsMedia);
+			viewHolder.ivDetailsMedia.setVisibility(View.VISIBLE);
+			viewHolder.ivDetailsMedia.setLayoutParams(getLayoutParamsImage(View.VISIBLE));
+		} else {
+			viewHolder.ivDetailsMedia.setVisibility(View.INVISIBLE);
+			viewHolder.ivDetailsMedia.setLayoutParams(getLayoutParamsImage(View.INVISIBLE));
+		}
 		return convertView;
+	}
+
+	private RelativeLayout.LayoutParams getLayoutParamsImage(int visible) {
+		if (visible == View.VISIBLE) {
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+					LayoutParams.MATCH_PARENT, 480);
+			params.addRule(RelativeLayout.RIGHT_OF, R.id.ivProfileImage);
+			params.addRule(RelativeLayout.BELOW, R.id.tvBody);
+			params.setMargins(0, 0, 30, 10);
+			return params;
+		} else {
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+					LayoutParams.WRAP_CONTENT, 0);
+			params.addRule(RelativeLayout.RIGHT_OF, R.id.ivProfileImage);
+			params.addRule(RelativeLayout.BELOW, R.id.tvBody);
+			params.setMargins(0, 0, 5, 5);
+			return params;
+		}
 	}
 
 	private RelativeLayout.LayoutParams getLayoutParams(int visibility) {
@@ -114,6 +144,8 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		viewHolder.tvRetweetedBy = (TextView) convertView.findViewById(R.id.tvRetweetedBy);
 		viewHolder.tvRetweets = (TextView) convertView.findViewById(R.id.tvRetweets);
 		viewHolder.tvFavorites = (TextView) convertView.findViewById(R.id.tvFavorites);
+		viewHolder.tvReply = (TextView) convertView.findViewById(R.id.tvReply);
+		viewHolder.ivDetailsMedia = (ImageView) convertView.findViewById(R.id.ivDetailsMedia);
 		convertView.setTag(viewHolder);
 	}
 }

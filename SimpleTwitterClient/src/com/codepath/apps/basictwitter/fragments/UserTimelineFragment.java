@@ -1,10 +1,13 @@
 package com.codepath.apps.basictwitter.fragments;
 
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 
 import android.os.Bundle;
 import android.util.Log;
 
+import com.codepath.apps.basictwitter.NetworkMonitor;
 import com.codepath.apps.basictwitter.TwitterApplication;
 import com.codepath.apps.basictwitter.TwitterClient;
 import com.codepath.apps.basictwitter.models.Tweet;
@@ -27,24 +30,33 @@ public class UserTimelineFragment extends TweetsListFragment {
 		if (user != null) {
 			userId = user.getUid();
 		}
-		client.getUserTimeline(userId, sinceId, maxId, new JsonHttpResponseHandler() {
-
-			@Override
-			public void onFailure(Throwable e, String s) {
-				Log.d("DEBUG", e.toString());
-				Log.d("DEBUG", s.toString());
-			}
-
-			@Override
-			public void onSuccess(JSONArray jsonResponse) {
-				if (isNewData) {
-					addAll(0, Tweet.fromJSONArray(jsonResponse, Tweet.Source.USER));
-				} else {
-					addAll(Tweet.fromJSONArray(jsonResponse, Tweet.Source.USER));
+		if (NetworkMonitor.isNetworkAvailable(getActivity())) {
+			client.getUserTimeline(userId, sinceId, maxId, new JsonHttpResponseHandler() {
+	
+				@Override
+				public void onFailure(Throwable e, String s) {
+					Log.d("DEBUG", e.toString());
+					Log.d("DEBUG", s.toString());
 				}
+	
+				@Override
+				public void onSuccess(JSONArray jsonResponse) {
+					if (isNewData) {
+						addAll(0, Tweet.fromJSONArray(jsonResponse, Tweet.Source.USER));
+					} else {
+						addAll(Tweet.fromJSONArray(jsonResponse, Tweet.Source.USER));
+					}
+				}
+	
+			});
+		} else {
+			ArrayList<Tweet> tweets = new ArrayList<Tweet>(Tweet.getAll(Tweet.Source.USER, sinceId, maxId, user.getUid()));
+			if (isNewData) {
+				addAll(0, tweets);
+			} else {
+				addAll(tweets);
 			}
-
-		});
+		}
 	}
 
 	public void loadMoreDataFromApi(long maxId) {

@@ -46,7 +46,13 @@ public class Tweet extends Model implements Serializable {
 	@Column(name = "favorites_count")
 	private long favoritesCount;
 	@Column(name = "source")
-	private Source source;
+	private String source;
+	@Column(name = "media_url")
+	private String mediaUrl;
+
+	public String getMediaUrl() {
+		return mediaUrl;
+	}
 
 	public enum Source {
 		HOME, MENTIONS, USER, COMPOSE
@@ -61,9 +67,15 @@ public class Tweet extends Model implements Serializable {
 	}
 
 	public static Tweet fromJSON(JSONObject jsonObject, Source source) {
-		Tweet tweet = new Tweet();
-		// Extract values from the json to populate the member variables.
 		try {
+			String id = String.valueOf(jsonObject.getLong("id")) + "_" + source.toString();
+			Tweet tweet = getTweetByTheId(id);
+			if (tweet != null) {
+				return tweet;
+			}
+			
+			tweet = new Tweet();
+			// Extract values from the json to populate the member variables.
 			if (jsonObject.has("retweeted_status")) {
 				tweet.isRetweet = true;
 				tweet.retweetedBy = jsonObject.getJSONObject("user").getString("name");
@@ -75,14 +87,20 @@ public class Tweet extends Model implements Serializable {
 			tweet.createdAt = getDateFromTwitterDate(jsonObject.getString("created_at"));
 			tweet.retweetCount = jsonObject.getLong("retweet_count");
 			tweet.favoritesCount = jsonObject.getLong("favorite_count");
-			tweet.source = source;
+			tweet.source = source.toString();
 			tweet.theid = String.valueOf(jsonObject.getLong("id")) + "_" + source.toString();
-			//tweet.save();
+			if (jsonObject.has("entities") && jsonObject.getJSONObject("entities").has("media")) {
+				JSONArray media = jsonObject.getJSONObject("entities").getJSONArray("media");
+				if (media.length() > 0) {
+					tweet.mediaUrl = ((JSONObject) media.get(0)).getString("media_url");
+				}
+			}
+			tweet.save();
+			return tweet;
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
 		}
-		return tweet;
 	}
 
 	public boolean isRetweet() {
@@ -155,11 +173,49 @@ public class Tweet extends Model implements Serializable {
 		return relativeTimeString;
 	}
 
-	public static List<Tweet> getAll(Source source) {
-		return new Select()
+	public static List<Tweet> getAll(Source source, long sinceId, long maxId, long userId) {
+		User user = User.getUserById(userId);
+		if (user != null) {
+			if (maxId > 0) {
+				return new Select()
+					.from(Tweet.class)
+					.where("source='" + source.toString() + "' and tid<" + maxId + " and user=" + user.getId())
+					.orderBy("tid DESC")
+					.execute();
+			} else if (sinceId > 0) {
+				return new Select()
+					.from(Tweet.class)
+					.where("source='" + source.toString() + "' and tid>" + sinceId + " and user=" + user.getId())
+					.orderBy("tid DESC")
+					.execute();
+			}
+		} else {
+			if (maxId > 0) {
+				return new Select()
+					.from(Tweet.class)
+					.where("source='" + source.toString() + "' and tid<" + maxId)
+					.orderBy("tid DESC")
+					.execute();
+			} else if (sinceId > 0) {
+				return new Select()
+					.from(Tweet.class)
+					.where("source='" + source.toString() + "' and tid>" + sinceId)
+					.orderBy("tid DESC")
+					.execute();
+			}
+		}
+		return null;
+	}
+
+	public static Tweet getTweetByTheId(String id) {
+		List<Tweet> tweet = new Select()
 			.from(Tweet.class)
-			.where("source = " + source)
-			.orderBy("tid DESC")
+			.where("theid = '" + id + "'")
 			.execute();
+		if (tweet != null && !tweet.isEmpty()) {
+			return tweet.get(0);
+		} else {
+			return null;
+		}
 	}
 }

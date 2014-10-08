@@ -21,6 +21,7 @@ import com.codepath.apps.basictwitter.TwitterApplication;
 import com.codepath.apps.basictwitter.TwitterClient;
 import com.codepath.apps.basictwitter.fragments.TweetsListFragment;
 import com.codepath.apps.basictwitter.fragments.UserTimelineFragment;
+import com.codepath.apps.basictwitter.models.Tweet;
 import com.codepath.apps.basictwitter.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -28,6 +29,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class ProfileActivity extends FragmentActivity implements
 		TweetsListFragment.OnImageClickListener {
 	private static final int COMPOSE_REQUEST = 2;
+	private static final int DETAILS_REQUEST = 3;
 	private ImageView ivCoverPhoto;
 	private ImageView ivProfileImage;
 	private TextView tvScreenName;
@@ -121,6 +123,10 @@ public class ProfileActivity extends FragmentActivity implements
 					    editor.putString("name", user.getName());
 					    editor.putLong("uid", user.getUid());
 					    editor.putString("profile_image_url", user.getProfileImageUrl());
+					    editor.putLong("followers_count", user.getFollowersCount());
+					    editor.putLong("statuses_count", user.getTweetsCount());
+					    editor.putLong("friends_count", user.getFollowingCount());
+						editor.putString("tagline", user.getTagLine());
 					    editor.commit();
 					}
 				});
@@ -181,7 +187,7 @@ public class ProfileActivity extends FragmentActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	if (requestCode == COMPOSE_REQUEST) {
+    	if (requestCode == COMPOSE_REQUEST || requestCode == DETAILS_REQUEST) {
     		if (resultCode == RESULT_OK) {
     			UserTimelineFragment fragment = (UserTimelineFragment) getSupportFragmentManager()
     	    			.findFragmentById(R.id.fragmentUserTimeline);
@@ -192,7 +198,7 @@ public class ProfileActivity extends FragmentActivity implements
     	}	
     }
 
-	public void onProfileImageClicked(View v) {
+    public void onProfileImageClicked(View v) {
     	TweetsListFragment fragment = (TweetsListFragment) getSupportFragmentManager()
     			.findFragmentById(R.id.fragmentUserTimeline);
     	if (fragment != null) {
@@ -201,7 +207,10 @@ public class ProfileActivity extends FragmentActivity implements
     }
 
 	public void replyToTweet(View v) {
-    	
+		Tweet t = (Tweet) v.getTag();
+    	Intent i = new Intent(this, TweetDetailsActivity.class);
+		i.putExtra("tweet", t);
+		startActivityForResult(i, DETAILS_REQUEST);
     }
 
     public void retweet(View v) {

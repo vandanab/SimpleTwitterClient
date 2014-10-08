@@ -64,7 +64,8 @@
         android:layout_alignParentRight="true"
         android:layout_below="@id/tvRetweetedBy"
         android:layout_centerVertical="true"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:adjustViewBounds="true"
         android:src="@drawable/add_user_1" />
 
@@ -79,9 +80,21 @@
         android:text="Tweet text"
         android:autoLink="web" />
 
+    <ImageView
+        android:id="@+id/ivDetailsMedia"
+        android:layout_width="match_parent"
+        android:layout_height="480dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/tvBody"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="10dp"
+        android:src="@drawable/ic_launcher"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY" />
+
     <TextView
         android:id="@+id/tvCreatedAt"
-        android:layout_below="@id/tvBody"
+        android:layout_below="@id/ivDetailsMedia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"

@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
+import com.codepath.apps.basictwitter.NetworkMonitor;
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.TwitterApplication;
 import com.codepath.apps.basictwitter.TwitterClient;
@@ -57,6 +59,10 @@ public class LoginActivity extends OAuthLoginActivity<TwitterClient> {
 				    editor.putString("name", user.getName());
 				    editor.putLong("uid", user.getUid());
 				    editor.putString("profile_image_url", user.getProfileImageUrl());
+				    editor.putLong("followers_count", user.getFollowersCount());
+				    editor.putLong("statuses_count", user.getTweetsCount());
+				    editor.putLong("friends_count", user.getFollowingCount());
+					editor.putString("tagline", user.getTagLine());
 				    editor.commit();
 				}
 			});
@@ -77,7 +83,11 @@ public class LoginActivity extends OAuthLoginActivity<TwitterClient> {
 	// Uses the client to initiate OAuth authorization
 	// This should be tied to a button used to login
 	public void loginToRest(View view) {
-		getClient().connect();
+		if (NetworkMonitor.isNetworkAvailable(this)) {
+			getClient().connect();
+		} else {
+			Toast.makeText(this, "Network not available", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 }
