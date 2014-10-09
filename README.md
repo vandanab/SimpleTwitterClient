@@ -19,7 +19,7 @@ Required:
   * User can compose a new tweet
     - User can click a “Compose” icon in the Action Bar on the top right
     - User can then enter a new tweet and post this to twitter
-    - User is taken back to home timeline with new tweet visible in timeline
+    - User is taken back to activity where he started compose and the new tweet is visible in timeline if applicable
     - Optional: User can see a counter with total number of characters left for tweet
 * User can switch between Timeline and Mention views using tabs.
   * User can view their home timeline tweets.
@@ -28,6 +28,7 @@ Required:
   * Optional: Implement tabs in a gingerbread-compatible approach`
 * User can navigate to view their own profile
   * User can see picture, tagline, # of followers, # of following, and tweets on their profile.
+  * Extra: The user's banner image is shown in the background of the profile.
 * User can click on the profile image in any tweet to see another user's profile.
   * User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
   * Profile view should include that user's timeline
@@ -40,7 +41,7 @@ The following advanced user stories are completed:
 * Advanced: User can open the twitter app offline and see last loaded tweets
   - Tweets are persisted into sqlite and can be displayed from the local DB.
 * Advanced: User can tap a tweet to display a "detailed" view of that tweet
-* Advanced: User can select "reply" from detail view to respond to a tweet
+* Advanced: User can select "reply" from detail view or reply icon to respond to a tweet
   * Advanced: User can "reply" to any tweet on their home timeline
   * The user that wrote the original tweet is automatically "@" replied in compose
 * Advanced: Improve the user interface and theme the app to feel "twitter branded"
@@ -48,4 +49,4 @@ The following advanced user stories are completed:
 
 Walkthrough of all user stories:
 
-![Video Walkthrough]()
+![Video Walkthrough](twitter_redux_1.gif)
