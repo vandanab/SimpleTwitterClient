@@ -13,7 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -107,14 +107,15 @@ public abstract class TweetsListFragment extends Fragment {
     }
 
 	private void setUpListViewListeners() {
-		lvTweets.setOnItemClickListener(new OnItemClickListener() {
+		lvTweets.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> adapter, View item,
+			public boolean onItemLongClick(AdapterView<?> adapter, View item,
 					int position, long id) {
 				Tweet t = (Tweet) adapter.getItemAtPosition(position);
 				Intent i = new Intent(getActivity(), TweetDetailsActivity.class);
 				i.putExtra("tweet", t);
 		    	startActivity(i);
+		    	return true;
 			}
 		});
 	}
@@ -147,6 +148,10 @@ public abstract class TweetsListFragment extends Fragment {
 		Tweet t = tweetsAdapter.getItem(0);
 		long sinceId = t.getTid();
     	loadNewDataFromApi(sinceId);
+	}
+
+	public void goToTop() {
+		lvTweets.setSelection(0);
 	}
 
 	public abstract void loadMoreDataFromApi(long maxId);

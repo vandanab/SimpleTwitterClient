@@ -16,7 +16,9 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.codepath.apps.basictwitter.NetworkMonitor;
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.TwitterApplication;
 import com.codepath.apps.basictwitter.TwitterClient;
@@ -85,6 +87,10 @@ public class ComposeActivity extends Activity {
 
 	private void saveTweet() {
 		String status = etStatus.getText().toString();
+		if(!NetworkMonitor.isNetworkAvailable(this)) {
+			Toast.makeText(this, "Network not available", Toast.LENGTH_SHORT).show();
+			return;
+		}
 		client.postUpdate(status, new JsonHttpResponseHandler() {
 
 			@Override
